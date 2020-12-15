@@ -1,9 +1,9 @@
-[ post pictures here idk lol].
+![Mishe1](https://imgur.com/VV1FaoI.png) ![Mishe2](https://imgur.com/oxFJfKM.jpg)
 
 # Siamese Neural Networks, One Shot Learning, and Facial Recognition
 
 Originally created as a small project to familiarize myself with concepts of One-Shot Learning, Siamese Neural Networks, and using those concepts to implement a small facial recognition application.
-This is a facial recognition application that predicts wether an image of a face _is_ or _is not_ a **Mishe**, a Mishe, described as "A girl with cheerful ears and a tail", is a 3D character created by (Ponderonium Institute)[https://ponderogen.booth.pm/items/1256087].
+This is a facial recognition application that predicts wether an image of a face _is_ or _is not_ a **Mishe**, a Mishe, described as "A girl with cheerful ears and a tail", is a 3D character created by [Ponderonium Institute](https://ponderogen.booth.pm/items/1256087).
 A higher number [0, 1] implies that the image given _is_ of a Mishe.
 
 ## Siamese Neural Networks
@@ -30,7 +30,7 @@ In our example, we want to be able to recognize that two faces are of the same t
 
 ### Data Collection
 
-Data for Anchors and Positives were collected myself by taking various pictures of users in the game of (VRChat)[https://hello.vrchat.com/] who were using a Mishe as a base model for their avatar. The pictures were cropped to 256x256 pixels on 3 separate RGB channels.
+Data for Anchors and Positives were collected myself by taking various pictures of users in the game of [VRChat](https://hello.vrchat.com/) who were using a Mishe as a base model for their avatar. The pictures were cropped to 256x256 pixels on 3 separate RGB channels.
 Because the game allows for custom model creation, it is possible that the model suffers as a result of Mishe having different colored hair or eyes. Although I expect this will actually increase the accuracy of the model.
 
 ### Regarding the SNN
@@ -46,14 +46,15 @@ In order to train this network, we utilize the **Triplet Loss** function. That i
 
 Each training example becomes a triplet of (A, P, N)
 Assuming we have a neural network model that can take a picture as input and output an embedding of the picture, the triplet los for the xample is
-$$
-max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)">
+
+
 The cost function is defined as the average of the triplet loss:
-$$
-\frac{1}{N}\sum_{i=1}^{N} max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)
-$$
-Where $\alpha$ is a positive hyperparameter. So we can see that $||f(A_i) - f(P_i)||^2$ is low for _similar_ embeddings, and high for _dissimilar_ embeddings.
+
+<img src="https://render.githubusercontent.com/render/math?math=\frac{1}{N}\sum_{i=1}^{N} max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)">
+
+Where <img src="https://render.githubusercontent.com/render/math?math=\alpha"> is a positive hyperparameter. So we can see that <img src="https://render.githubusercontent.com/render/math?math=||f(A_i) - f(P_i)||^2"> is low for _similar_ embeddings, and high for _dissimilar_ embeddings.
 
 ## TODO
 - Acquire more data
