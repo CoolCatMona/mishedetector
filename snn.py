@@ -149,7 +149,7 @@ class SNN:
             # Each 100 iterations perform a one_shot_task and write to tensorboard the
             # stored losses and accuracies
             if (iteration + 1) % evaluate_each == 0:
-                number_of_runs = 40  # MAGIC NUMBER
+                number_of_runs = 1  # MAGIC NUMBER
                 validation_accuracy = self.image_loader.one_shot_test(
                     self.model, number_of_runs, is_validation=True)
 
@@ -166,6 +166,9 @@ class SNN:
                 else:
                     # Save the model
                     if validation_accuracy > best_validation_accuracy:
+                        logger.info(f"Validation accuracy increased! Was {best_validation_accuracy}\
+                             is now {validation_accuracy}! An increase of\
+                                  {validation_accuracy - best_validation_accuracy}")
                         best_validation_accuracy = validation_accuracy
                         best_accuracy_iteration = iteration
 

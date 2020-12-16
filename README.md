@@ -40,27 +40,34 @@ The implementation of the SNN was fairly straightfowrard up to the custom traini
 ### Triplet Loss
 
 In order to train this network, we utilize the **Triplet Loss** function. That is the data is divided into **Anchor**, **Positive**, and **Negative** pairs
-- $A$nchor is an image of our base model's face
-- $P$ositive is _another_ image of our base model's face
-- $N$egative is an image _not_ of our base model
+- **A**nchor is an image of our base model's face
+- **P**ositive is _another_ image of our base model's face
+- **N**egative is an image _not_ of our base model
 
 Each training example becomes a triplet of (A, P, N)
-Assuming we have a neural network model that can take a picture as input and output an embedding of the picture, the triplet los for the xample is
+Assuming we have a neural network model that can take a picture as input and output an embedding of the picture, the triplet loss for the example is
 
 <img src="https://render.githubusercontent.com/render/math?math=max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)">
+
+This is the euclidian distance between the **A**nchor and **P**ositive image and the **A**nchor and **N**egative image, plus some offset
 
 
 The cost function is defined as the average of the triplet loss:
 
 <img src="https://render.githubusercontent.com/render/math?math=\frac{1}{N}\sum_{i=1}^{N} max(||f(A_i) - f(P_i)||^2 - ||f(A_i) - f(N_i)||^2 + \alpha, 0)">
 
-Where <img src="https://render.githubusercontent.com/render/math?math=\alpha"> is a positive hyperparameter. So we can see that <img src="https://render.githubusercontent.com/render/math?math=||f(A_i) - f(P_i)||^2"> is low for _similar_ embeddings, and high for _dissimilar_ embeddings.
+Where <img src="https://render.githubusercontent.com/render/math?math=\alpha"> is a positive hyperparameter. So we can see that <img src="https://render.githubusercontent.com/render/math?math=||f(A_i) - f(P_i)||^2"> is low for _similar_ embeddings, and high for _dissimilar_ embeddings, which we would see when comparing the **A**nchor image with the **N**egative.
+
+## Current Results
+
+Currently, the model seems to be predicting that an image is a mishe a little over 50% of the time.
 
 ## TODO
 - Acquire more data
 - Hyperparameter tuning
 - Image Augmentation (for training)
 - Differentiate between multiple classes
+- Currently only takes batches of images, so at best, we need a folder, evaluation, with two of the same image; enable a single prediction.
 
 ## Credits
 

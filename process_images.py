@@ -1,13 +1,18 @@
 """Processes images in dataset."""
+from enum import IntEnum
 import logging
 import os
 import random
 
 import numpy as np
 from PIL import Image
-from snn import Channels
 
 logger = logging.getLogger(__name__)
+
+
+class Channels(IntEnum):
+    GREYSCALE = 1
+    RGB = 3
 
 
 class ImageLoader():
@@ -89,10 +94,16 @@ class ImageLoader():
 
         for pair in range(number_of_pairs):
             image = self._convert_image(path_list, pair, 0)
-            pairs_of_images[0][pair, :, :, 0] = image
+            if self._COLOR_CHANNELS == Channels.GREYSCALE:
+                pairs_of_images[0][pair, :, :, 0] = image
+            else:
+                pairs_of_images[0][pair, :, :] = image
 
             image = self._convert_image(path_list, pair, 1)
-            pairs_of_images[1][pair, :, :, 0] = image
+            if self._COLOR_CHANNELS == Channels.GREYSCALE:
+                pairs_of_images[1][pair, :, :, 0] = image
+            else:
+                pairs_of_images[1][pair, :, :] = image
             if not is_one_shot:
                 if (pair + 1) % 2 == 0:
                     labels[pair] = 0
@@ -108,8 +119,12 @@ class ImageLoader():
         if not is_one_shot:
             random_permutation = np.random.permutation(number_of_pairs)
             labels = labels[random_permutation]
-            pairs_of_images[0][:, :, :, :] = pairs_of_images[0][random_permutation, :, :, :]
-            pairs_of_images[1][:, :, :, :] = pairs_of_images[1][random_permutation, :, :, :]
+            if self._COLOR_CHANNELS == Channels.GREYSCALE:
+                pairs_of_images[0][:, :, :, :] = pairs_of_images[0][random_permutation, :, :, :]
+                pairs_of_images[1][:, :, :, :] = pairs_of_images[1][random_permutation, :, :, :]
+            else:
+                pairs_of_images[0][:, :, :] = pairs_of_images[0][random_permutation, :, :]
+                pairs_of_images[1][:, :, :] = pairs_of_images[1][random_permutation, :, :]
 
         return pairs_of_images, labels
 
@@ -197,6 +212,10 @@ class ImageLoader():
             image_folder_path, images[image_indexes[1]])
         bacth_images_path.append(image)
 
+        if not is_validation:
+            logger.info(f"Using {test_image} as Anchor")
+            logger.info(f"Using {image} as Positive")
+
         for negative in self.negative_images:
             image = os.path.join(self.negatives_path, negative)
             bacth_images_path.append(test_image)
@@ -226,17 +245,20 @@ class ImageLoader():
         for _ in range(number_of_tasks):
             images, _ = self.get_one_shot_batch(is_validation=is_validation)
             probabilities = model.predict_on_batch(images)
+            # logger.info(f"Probabilities are {probabilities}")
 
             # Case where most are same class
             if np.argmax(probabilities) == 0 and probabilities.std() > 0.01:
                 accuracy = 1.0
             else:
-                accuracy = 0.0
+                # accuracy = 0.0
+                accuracy = np.mean(probabilities)
+                pass
 
             mean_accuracy += accuracy
 
         mean_accuracy /= number_of_tasks
 
-        logger.info(f"Accuracy that image given is of the class: {mean_accuracy}")
+        logger.info(f"Probability that image given is of the class: {mean_accuracy}")
 
         return mean_accuracy
